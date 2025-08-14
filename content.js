@@ -14,7 +14,7 @@
     priceMin: 'rzPriceMin',
     priceMax: 'rzPriceMax',
     enableTopOnly: 'rzEnableTopOnly',
-  };
+  }; 
   let settings = {
     enabled: true,
     enableRating: false, ratingMin: null, ratingMax: null,
@@ -26,6 +26,7 @@
 
   let observer = null, heartbeatTimer = null;
   const HIDE_CLASS = 'rz-hidden';
+  let authAllowed = false;
 
   // ====== STYLES ======
   const style = document.createElement('style');
@@ -53,6 +54,22 @@
 
   // ====== UTILS ======
   const toNum = (v) => (v === null || v === undefined || v === '' ? null : Number(v));
+
+  function checkAuth(cb){
+    chrome.storage.sync.get({authorized:false, allowed:false}, res => {
+      authAllowed = res.authorized && res.allowed;
+      cb && cb(authAllowed);
+    });
+  }
+
+  function disableAll(){
+    settings.enabled=false;
+    if(observer){observer.disconnect(); observer=null;}
+    document.querySelectorAll('.'+HIDE_CLASS).forEach(el=>el.classList.remove(HIDE_CLASS));
+    const portal=document.querySelector('.rz-analytics-portal'); if(portal) portal.remove();
+    const fab=document.querySelector('.rz-analytics-fab'); if(fab) fab.remove();
+    clearInterval(heartbeatTimer); heartbeatTimer=null;
+  }
 
   function loadSettings(cb) {
     const defaults = {}; for (const [k,v] of Object.entries(settings)) defaults[K[k]] = v;
@@ -227,7 +244,7 @@
     ensureHoverPortalButton(cell); // analytics button
   }
 
-  function sweep(){ eachTileCell(processCell); }
+  function sweep(){ if(!authAllowed) return; eachTileCell(processCell); }
 
   // ====== Analytics FAB & Panel (with auto-close & cancellation) ======
   const fab = (() => {
@@ -248,6 +265,7 @@
   function showFab(cell){ fabAttachedFor = cell; positionFab(cell); fab.wrap.classList.add('show'); }
   function hideFabSoon(delay=120){ clearTimeout(fabHideTimer); fabHideTimer=setTimeout(()=>{ fab.wrap.classList.remove('show'); fabAttachedFor=null; }, delay); }
   function ensureHoverPortalButton(cell) {
+    if (!authAllowed) return;
     if (cell.__rzHoverInit) return;
     cell.__rzHoverInit = true;
     cell.addEventListener('mouseenter', () => { clearTimeout(fabHideTimer); showFab(cell); });
@@ -323,6 +341,7 @@
   }
 
   fab.btn.addEventListener('click', async (e) => {
+    if(!authAllowed) return;
     e.preventDefault(); e.stopPropagation();
     const cell = fabAttachedFor; if (!cell) return;
     const seq = bumpSeq(cell);
@@ -535,6 +554,18 @@
       return true;
     }
   });
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== 'sync') return;
+    if ('authorized' in changes || 'allowed' in changes) {
+      checkAuth(ok => {
+        if (ok) {
+          loadSettings(()=>{ startObserver(); startHeartbeat(); sweep(); });
+        } else {
+          disableAll();
+        }
+      });
+    }
+  });
   chrome.storage.onChanged.addListener((changes,area)=>{
     if (area!=='sync') return;
     const updated={};
@@ -547,5 +578,5 @@
     applySettings(updated);
   });
 
-  loadSettings(()=>{ startObserver(); startHeartbeat(); sweep(); });
+  checkAuth(ok => { if (ok) loadSettings(()=>{ startObserver(); startHeartbeat(); sweep(); }); });
 })();

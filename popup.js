@@ -15,6 +15,20 @@ const K = {
 };
 function toNumOrNull(v){ if(v===''||v==null) return null; const n=Number(v); return Number.isNaN(n)?null:n; }
 
+function showAuth(){
+  document.getElementById('authSection').style.display='block';
+  document.getElementById('mainContent').style.display='none';
+}
+async function showMain(){
+  document.getElementById('authSection').style.display='none';
+  document.getElementById('mainContent').style.display='block';
+  await load();
+}
+async function initAuth(){
+  const {authorized=false, allowed=false} = await chrome.storage.sync.get({authorized:false, allowed:false});
+  if(authorized && allowed) showMain(); else showAuth();
+}
+
 function setDisabled(groupId, enabled){
   const group = document.getElementById(groupId);
   if (!group) return;
@@ -100,5 +114,24 @@ document.getElementById('reset').addEventListener('click', async () => {
   setDisabled('priceGroup', false);
   await save();
 });
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPassword').value;
+  const {userEmail=null,userPassword=null}=await chrome.storage.sync.get({userEmail:null,userPassword:null});
+  if(userEmail===email && userPassword===pass){
+    await chrome.storage.sync.set({authorized:true,allowed:true});
+    showMain();
+  } else {
+    alert('Неверный логин или пароль');
+  }
+});
+document.getElementById('registerBtn').addEventListener('click', async () => {
+  const email=document.getElementById('regEmail').value.trim();
+  const pass=document.getElementById('regPassword').value;
+  await chrome.storage.sync.set({userEmail:email,userPassword:pass,authorized:true,allowed:true});
+  showMain();
+});
+document.getElementById('showRegister').addEventListener('click',e=>{e.preventDefault();document.getElementById('loginForm').style.display='none';document.getElementById('registerForm').style.display='block';});
+document.getElementById('showLogin').addEventListener('click',e=>{e.preventDefault();document.getElementById('registerForm').style.display='none';document.getElementById('loginForm').style.display='block';});
 
-load();
+initAuth();
