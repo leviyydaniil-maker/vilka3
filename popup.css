@@ -14,6 +14,7 @@ h1{font-size:16px;margin:0}
 .grid.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
 input[type="number"]{padding:10px;border:1px solid var(--b);border-radius:12px;width:100%;background:#fff}
 input[type="number"]:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allowed}
+input[type="email"],input[type="password"]{padding:10px;border:1px solid var(--b);border-radius:12px;width:100%;background:#fff;margin-top:8px}
 button.btn{padding:10px 12px;border-radius:12px;border:1px solid var(--b);background:#fff;cursor:pointer}
 button.btn.primary{background:var(--accent);border-color:var(--accent);color:white}
 
