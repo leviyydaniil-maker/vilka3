@@ -1,0 +1,35 @@
+
+*{box-sizing:border-box}
+:root{--bg:#f7f8fa;--card:#fff;--muted:#6b7280;--b:#e5e7eb;--accent:#22c55e;--danger:#ef4444}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Noto Sans',sans-serif;margin:0;padding:12px;width:360px;background:var(--bg)}
+h1{font-size:16px;margin:0}
+.section{margin-top:12px}
+.head{margin-bottom:4px}
+.card{background:var(--card);border:1px solid var(--b);border-radius:14px;padding:10px 12px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.title{font-weight:600}
+.grow{flex:1}
+.row{display:flex;align-items:center;gap:12px}
+.item{min-height:32px}
+.between{justify-content:space-between}
+.grid.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+input[type="number"]{padding:10px;border:1px solid var(--b);border-radius:12px;width:100%;background:#fff}
+input[type="number"]:disabled{background:#f3f4f6;color:#9ca3af;cursor:not-allowed}
+button.btn{padding:10px 12px;border-radius:12px;border:1px solid var(--b);background:#fff;cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:white}
+
+/* iOS-like switches */
+.ios-switch{position:relative;display:inline-flex;align-items:center;width:46px;height:26px}
+.ios-switch input{opacity:0;width:0;height:0}
+.ios-switch .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#d1d5db;border-radius:999px;transition:.2s}
+.ios-switch .slider:before{content:"";position:absolute;height:22px;width:22px;left:2px;top:2px;background:#fff;border-radius:999px;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.ios-switch input:checked + .slider{background:var(--accent)}
+.ios-switch input:checked + .slider:before{transform:translateX(20px)}
+.ios-switch.big{width:56px;height:30px}
+.ios-switch.big .slider:before{height:26px;width:26px}
+/* MAIN toggle: explicit visuals */
+.ios-switch.main .slider{background:var(--danger); box-shadow:0 0 0 2px rgba(239,68,68,.15) inset;}
+.ios-switch.main input:checked + .slider{background:var(--accent); box-shadow:none}
+.ios-switch.main input:checked + .slider:before{transform:translateX(26px)} /* full travel */
+
+/* disable group look */
+.group-disabled input[type="number"]{opacity:.6}

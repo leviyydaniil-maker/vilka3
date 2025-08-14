@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Вилка. плаг ин в розетку — v2.7.0 (sitewide + hide no-reviews)",
+  "version": "2.7.0",
+  "description": "Фильтры по звёздам/отзывам/цене/ТОП + «скрывать без отзывов», аналитика (кол-во и средняя ★ по месяцам). Работает на страницах продавцов и категориях.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Вилка. плаг ин в розетку"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "*://*.rozetka.com.ua/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.rozetka.com.ua/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ]
+}
